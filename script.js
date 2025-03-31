@@ -45,13 +45,13 @@ document.addEventListener('DOMContentLoaded', function() {
             showResult('Sedang memproses...', 'loading');
             trackInfo.style.display = 'none';
             
-            const response = await fetch(`https://spotifydl.xbotzlauncher.biz.id/api/spotify/download?url=${encodeURIComponent(url)}`);
+            const response = await fetch(`https://api.siputzx.my.id/api/d/spotify?url=${encodeURIComponent(url)}`);
             const data = await response.json();
 
-            if (data.status && data.code === 200) {
-                showTrackInfo(data.result);
+            if (data.status && data.data) {
+                showTrackInfo(data.data);
             } else {
-                showResult('Gagal memproses: ' + (data.message || 'Terjadi kesalahan'), 'error');
+                showResult('Gagal memproses: Data tidak ditemukan', 'error');
             }
         } catch (error) {
             showResult('Koneksi error: ' + error.message, 'error');
@@ -67,31 +67,31 @@ document.addEventListener('DOMContentLoaded', function() {
     function showTrackInfo(trackData) {
         resultBox.style.display = 'none';
         trackInfo.style.display = 'flex';
-        
-        document.getElementById('track-title').textContent = trackData.metadata.title;
-        document.getElementById('track-artist').textContent = trackData.metadata.artist;
-        document.getElementById('track-album').textContent = trackData.metadata.album;
-        document.getElementById('track-cover').src = trackData.metadata.cover;
-        document.getElementById('download-link').href = trackData.download;
+
+        document.getElementById('track-title').textContent = trackData.title || 'Tidak tersedia';
+        document.getElementById('track-artist').textContent = trackData.artis || 'Tidak tersedia';
+        document.getElementById('track-album').textContent = trackData.type || 'Tidak tersedia';
+        document.getElementById('track-cover').src = trackData.image || 'default-image.png';
+        document.getElementById('download-link').href = trackData.download || '#';
     }
 
     function showResult(message, type) {
         resultBox.style.display = 'flex';
         trackInfo.style.display = 'none';
-        
+
         const iconClass = {
             'error': 'fa-times-circle',
             'loading': 'fa-spinner fa-spin',
             'success': 'fa-check-circle'
         };
-        
+
         resultBox.innerHTML = `
             <i class="fas ${iconClass[type] || 'fa-info-circle'}"></i>
             <span>${message}</span>
         `;
-        
+
         resultBox.className = `result-box ${type === 'loading' ? 'loading' : ''}`;
-        
+
         const icon = resultBox.querySelector('i');
         if (type === 'error') {
             icon.style.color = '#ff4444';
